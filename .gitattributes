@@ -1,0 +1,3 @@
+ESM-2/esm__with_my_model/* filter=lfs diff=lfs merge=lfs -text
+ESM-2/esm_outputs/* filter=lfs diff=lfs merge=lfs -text
+ESM-2/ground_truth/* filter=lfs diff=lfs merge=lfs -text
