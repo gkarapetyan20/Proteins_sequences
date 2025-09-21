@@ -20,7 +20,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/gkarapetyan20/Proteins_sequences
-cd <Proteins_sequences>
+cd Proteins_sequences
 
 ```
 ## Install dependencies
@@ -40,4 +40,8 @@ python test_one_sequence.py
 
 ## Documentation
 
-For a complete explanation of the workflow, model improvements, and experimental results, please read: work_description.pdf
+For a complete explanation of the workflow, model improvements, and experimental results, please read:
+
+```bash
+work_description.pdf
+``` 
