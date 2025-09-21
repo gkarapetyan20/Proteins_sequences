@@ -4,20 +4,13 @@ import numpy as np
 true_folder = "" # ground truth folder
 pred_folder = "" # predicted folder
 
-
-#ESM-2 ====== 0.0351
-# ESM-2_WITH_MY  ----------> 0.3670
-
 def load_matrix(path):
     return np.loadtxt(path, dtype=int)
 
-# choose strategy: "skip", "truncate", or "pad"
 MISMATCH_STRATEGY = "truncate"
 
-correct_ones = 0
-total_ones = 0
+TP, FP, FN, TN = 0, 0, 0, 0
 
-# map predicted filenames to clean base names
 pred_map = {}
 for filename in os.listdir(pred_folder):
     if filename.endswith(".txt"):
@@ -28,7 +21,6 @@ for filename in os.listdir(true_folder):
     if filename.endswith(".txt"):
         true_path = os.path.join(true_folder, filename)
 
-        # match to predicted file
         if filename not in pred_map:
             print(f"No prediction found for {filename}")
             continue
@@ -37,7 +29,6 @@ for filename in os.listdir(true_folder):
         true_mat = load_matrix(true_path)
         pred_mat = load_matrix(pred_path)
 
-        # handle mismatched shapes
         if true_mat.shape != pred_mat.shape:
             if MISMATCH_STRATEGY == "skip":
                 print(f"Skipping {filename}, shape mismatch: {true_mat.shape} vs {pred_mat.shape}")
@@ -56,12 +47,18 @@ for filename in os.listdir(true_folder):
                 true_mat, pred_mat = padded_true, padded_pred
                 print(f"Padded {filename} to {true_mat.shape}")
 
-        # count 1s in true
-        total_ones += np.sum(true_mat == 1)
+        # confusion matrix terms
+        TP += np.sum((true_mat == 1) & (pred_mat == 1))
+        FP += np.sum((true_mat == 0) & (pred_mat == 1))
+        FN += np.sum((true_mat == 1) & (pred_mat == 0))
+        TN += np.sum((true_mat == 0) & (pred_mat == 0))
 
-        # count correctly predicted 1s
-        correct_ones += np.sum((true_mat == 1) & (pred_mat == 1))
+# compute metrics
+precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
 
-accuracy = correct_ones / total_ones if total_ones > 0 else 0
-print(f"\n Accuracy (correct 1s / all true 1s): {accuracy:.4f}")
-print(f"Correct 1s: {correct_ones}, Total 1s: {total_ones}")
+print(f"\nPrecision: {precision:.4f}")
+print(f"Recall:    {recall:.4f}")
+print(f"F1 Score:  {f1:.4f}")
+print(f"TP={TP}, FP={FP}, FN={FN}, TN={TN}")
